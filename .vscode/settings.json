@@ -1,0 +1,7 @@
+{
+    "editor.formatOnSave": true,
+    "rust-analyzer.linkedProjects": [
+        "packages/note-parser/Cargo.toml"
+    ],
+    "python.analysis.stubPath": "packages/note-agent-system/src/note_agent_system/generated"
+}

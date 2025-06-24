@@ -1,0 +1,1 @@
+This package is meant to be built as a commnad line executable that will reach out to a gRPC server to create and synchronize zettels (notes). The code can be built and a binary is output into `./dist` if you run `./build.sh` in this directory.

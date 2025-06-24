@@ -1,0 +1,82 @@
+syntax = "proto3";
+
+package noteservice;
+
+option go_package = "./pb";
+
+message Note {
+  string title = 1;
+  string content = 2;
+  repeated string tags = 3;
+  int64 created_at = 4;
+  int64 updated_at = 5;
+
+  repeated Note linked_notes = 6;
+}
+
+/**
+================================ CREATE ================================
+*/
+message CreateNoteRequest {
+  string title = 1;
+  string content = 2;
+
+  repeated string tags = 3;
+  repeated string linked_note_titles = 4;
+}
+message CreateNoteResponse {
+  Note note = 1;
+}
+
+/**
+================================ GET ================================
+*/
+message GetNoteRequest {
+  string title = 1;
+}
+message GetNoteResponse {
+  Note note = 1;
+}
+
+/**
+================================ LIST ================================
+*/
+message ListNotesRequest {}
+message ListNotesResponse {
+  repeated Note notes = 1;
+}
+
+/**
+================================ UPDATE ================================
+*/
+message UpdateNoteRequest {
+  string title = 1;
+  string content = 2;
+
+  repeated string tags = 3;
+  repeated string linked_note_titles = 4;
+}
+message UpdateNoteResponse {
+  Note note = 1;
+}
+
+/**
+================================ DELETE ================================
+*/
+message DeleteNoteRequest {
+  string title = 1;
+}
+message DeleteNoteResponse {
+  bool success = 1;
+}
+
+/**
+================================ SERVICE ================================
+*/
+service NoteService {
+  rpc CreateNote(CreateNoteRequest) returns (CreateNoteResponse);
+  rpc GetNote(GetNoteRequest) returns (GetNoteResponse);
+  rpc ListNotes(ListNotesRequest) returns (ListNotesResponse);
+  rpc UpdateNote(UpdateNoteRequest) returns (UpdateNoteResponse);
+  rpc DeleteNote(DeleteNoteRequest) returns (DeleteNoteResponse);
+}

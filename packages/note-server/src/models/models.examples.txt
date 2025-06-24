@@ -1,0 +1,151 @@
+/**
+MODEL EXAMPLES
+*/
+
+package models
+
+import (
+	"time"
+
+	"github.com/google/uuid"
+	"gorm.io/gorm"
+)
+
+// Base model with common fields
+type BaseModel struct {
+	ID        uint           `gorm:"primarykey" json:"id"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
+}
+
+// User model
+type User struct {
+	BaseModel
+	Email     string `gorm:"uniqueIndex;not null" json:"email"`
+	Username  string `gorm:"uniqueIndex;not null" json:"username"`
+	FirstName string `gorm:"size:100" json:"first_name"`
+	LastName  string `gorm:"size:100" json:"last_name"`
+	IsActive  bool   `gorm:"default:true" json:"is_active"`
+
+	// Relationships
+	Posts    []Post    `gorm:"foreignKey:UserID" json:"posts,omitempty"`
+	Comments []Comment `gorm:"foreignKey:UserID" json:"comments,omitempty"`
+}
+
+// Post model
+type Post struct {
+	BaseModel
+	Title   string `gorm:"not null;size:255" json:"title"`
+	Content string `gorm:"type:text" json:"content"`
+	Slug    string `gorm:"uniqueIndex;not null" json:"slug"`
+	UserID  uint   `gorm:"not null" json:"user_id"`
+
+	// Relationships
+	User     User      `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Comments []Comment `gorm:"foreignKey:PostID" json:"comments,omitempty"`
+	Tags     []Tag     `gorm:"many2many:post_tags;" json:"tags,omitempty"`
+}
+
+// Comment model
+type Comment struct {
+	BaseModel
+	Content string `gorm:"type:text;not null" json:"content"`
+	UserID  uint   `gorm:"not null" json:"user_id"`
+	PostID  uint   `gorm:"not null" json:"post_id"`
+
+	// Relationships
+	User User `gorm:"foreignKey:UserID" json:"user,omitempty"`
+	Post Post `gorm:"foreignKey:PostID" json:"post,omitempty"`
+}
+
+// Tag model for many-to-many relationship
+type Tag struct {
+	BaseModel
+	Name  string `gorm:"uniqueIndex;not null;size:50" json:"name"`
+	Color string `gorm:"size:7" json:"color"` // hex color code
+
+	// Relationships
+	Posts []Post `gorm:"many2many:post_tags;" json:"posts,omitempty"`
+}
+
+// PostTag is the join table for Post and Tag many-to-many relationship
+type PostTag struct {
+	PostID uint `gorm:"primaryKey"`
+	TagID  uint `gorm:"primaryKey"`
+	Post   Post `gorm:"foreignKey:PostID"`
+	Tag    Tag  `gorm:"foreignKey:TagID"`
+}
+
+// TableName methods to specify custom table names if needed
+func (User) TableName() string {
+	return "users"
+}
+
+func (Post) TableName() string {
+	return "posts"
+}
+
+func (Comment) TableName() string {
+	return "comments"
+}
+
+func (Tag) TableName() string {
+	return "tags"
+}
+
+func (PostTag) TableName() string {
+	return "post_tags"
+}
+
+/**
+EXAMPLE USAGE OF MODELS
+*/
+
+func demonstrateUsage() {
+	log.Println("Demonstrating database operations...")
+
+	// Create a new user
+	user := models.User{
+		Email:     "demo@example.com",
+		Username:  "demo_user",
+		FirstName: "Demo",
+		LastName:  "User",
+		IsActive:  true,
+	}
+
+	// Create user if doesn't exist
+	if err := db.DB.FirstOrCreate(&user, models.User{Email: user.Email}).Error; err != nil {
+		log.Printf("Error creating user: %v", err)
+		return
+	}
+
+	log.Printf("User created/found: %+v", user)
+
+	// Create a post for the user
+	post := models.Post{
+		Title:   "My First Post",
+		Content: "This is the content of my first post!",
+		Slug:    "my-first-post",
+		UserID:  user.ID,
+	}
+
+	if err := db.DB.FirstOrCreate(&post, models.Post{Slug: post.Slug}).Error; err != nil {
+		log.Printf("Error creating post: %v", err)
+		return
+	}
+
+	log.Printf("Post created/found: %+v", post)
+
+	// Query posts with user information
+	var posts []models.Post
+	if err := db.DB.Preload("User").Find(&posts).Error; err != nil {
+		log.Printf("Error querying posts: %v", err)
+		return
+	}
+
+	log.Printf("Found %d posts", len(posts))
+	for _, p := range posts {
+		log.Printf("Post: %s by %s", p.Title, p.User.Username)
+	}
+}

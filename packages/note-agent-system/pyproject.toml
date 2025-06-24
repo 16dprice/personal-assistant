@@ -1,0 +1,44 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "note-agent-system"
+dynamic = ["version"]
+description = ''
+readme = "README.md"
+requires-python = ">=3.8"
+license = "MIT"
+keywords = []
+authors = [{ name = "DJ", email = "dj@trunk.tools" }]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Programming Language :: Python :: Implementation :: PyPy",
+]
+dependencies = ["grpcio", "grpcio-tools", "protobuf"]
+
+[tool.hatch.version]
+path = "src/note_agent_system/__about__.py"
+
+[tool.coverage.run]
+source_pkgs = ["note_agent_system", "tests"]
+branch = true
+parallel = true
+omit = ["src/note_agent_system/__about__.py"]
+
+[tool.coverage.paths]
+note_agent_system = [
+    "src/note_agent_system",
+    "*/note-agent-system/src/note_agent_system",
+]
+tests = ["tests", "*/note-agent-system/tests"]
+
+[tool.coverage.report]
+exclude_lines = ["no cov", "if __name__ == .__main__.:", "if TYPE_CHECKING:"]
