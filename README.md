@@ -8,7 +8,8 @@ Must have Go, Rust, and Hatch installed.
 
 ## Get Note Server running
 
-1. in `packages/note-server`, run `docker compose -f ./docker/docker-compose.yml --env-file ./.env up -d`
+1. in `packages/note-server`, run `cp .env.example .env`
+1. run `docker compose -f ./docker/docker-compose.yml --env-file ./.env up -d` to bring up the DB container
 2. create new database on that postgres server called `note_server_db`
 3. run `go run src/seed/seed.go -reset` to run initial migrations. (Optionally, run `source .env` if you want to change env vars)
 4. run `go run src/main.go`
