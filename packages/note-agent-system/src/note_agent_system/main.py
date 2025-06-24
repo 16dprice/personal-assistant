@@ -5,7 +5,7 @@ import grpc
 channel = grpc.insecure_channel("localhost:50051")
 client = NoteServiceStub(channel=channel)
 
-request = GetNoteRequest(title="1740771336 We All Write.md")
+request = GetNoteRequest(title="1740771329 How to Take Smart Notes.md")
 response = client.GetNote(request)
 
 print(response)

@@ -32,7 +32,7 @@ func getEnv(key, defaultValue string) string {
 func NewConfig() *Config {
 	return &Config{
 		Host:     getEnv("DB_HOST", "localhost"),
-		Port:     getEnv("DB_PORT", "5432"),
+		Port:     getEnv("DB_PORT", "5439"),
 		User:     getEnv("DB_USER", "postgres"),
 		Password: getEnv("DB_PASSWORD", "postgres"),
 		DBName:   getEnv("DB_NAME", "note_server_db"),
